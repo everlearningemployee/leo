@@ -7,7 +7,7 @@
 					<qTrue>
 						<instruction text="" comment="&#34;시장가 조회&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
 						<call text="&#34;calcAmtPrc()&#34;" comment="&#34;시장가 기반으로 주문가/수량 산정&#34;" color="ffffff" disabled="0"></call>
-						<instruction text="" comment="&#34;주문&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+						<call text="&#34;order()&#34;" comment="&#34;주문&#34;" color="ffffff" disabled="0"></call>
 					</qTrue>
 					<qFalse color="ffffff">
 					</qFalse>
