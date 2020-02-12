@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root xmlns:nsd="https://structorizer.fisch.lu" version="3.30-04" preRepeat="until " postFor="to" preReturn="return" postForIn="in" preWhile="while " output="OUTPUT" input="INPUT" preFor="for" preExit="exit" preLeave="leave" ignoreCase="true" preThrow="throw" preForIn="foreach" stepFor="by" author="red.suh" created="2020-02-11" changedby="RedMoon" changed="2020-02-12" origin="Structorizer 3.30-04" text="&#34;밀림사자 레오&#34;" comment="" color="ffffff" type="program" style="nice">
+<root xmlns:nsd="https://structorizer.fisch.lu" version="3.30-04" preRepeat="until " postFor="to" preReturn="return" postForIn="in" preWhile="while " output="OUTPUT" input="INPUT" preFor="for" preExit="exit" preLeave="leave" ignoreCase="true" preThrow="throw" preForIn="foreach" stepFor="by" author="red.suh" created="2020-02-11" changedby="red.suh" changed="2020-02-12" origin="Structorizer 3.30-04" text="&#34;밀림사자 레오&#34;" comment="" color="ffffff" type="program" style="nice">
 	<children>
-		<forever comment="&#34;&#34;" color="ffffff" disabled="0">
+		<forever comment="" color="c0c0c0" disabled="0">
 			<qForever>
-				<alternative text="" comment="&#34;레오 주문이 없다면&#34;" color="ffffff" disabled="0">
+				<instruction text="" comment="&#34;&#60;주문진행건&#62; 조회&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+				<alternative text="" comment="&#34;&#60;주문진행건&#62;에 건이 없다면&#34;" color="ffffff" disabled="0">
 					<qTrue>
-						<instruction text="" comment="&#34;시장가 조회&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+						<instruction text="&#34;&#34;" comment="&#34;[시장 현황 상세정보] 호출 -&#62; 시장가, bid, ask 조회&#34;" color="80ff80" rotated="0" disabled="0"></instruction>
 						<call text="&#34;calcAmtPrc()&#34;" comment="&#34;시장가 기반으로 주문가/수량 산정&#34;" color="ffffff" disabled="0"></call>
 						<call text="&#34;order()&#34;" comment="&#34;주문&#34;" color="ffffff" disabled="0"></call>
 					</qTrue>
 					<qFalse color="ffffff">
 					</qFalse>
 				</alternative>
-				<instruction text="" comment="&#34;레오 주문 중, 체결/부분체결 내역 조회&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
-				<alternative text="" comment="&#34;레오 주문 중, 체결된 주문내역이 있다면&#34;" color="ffffff" disabled="0">
+				<instruction text="" comment="&#34;[체결된 주문내역] 호출&#34;" color="80ffff" rotated="0" disabled="0"></instruction>
+				<instruction text="" comment="&#34;[체결된 주문내역] 중 &#60;주문진행건&#62; 검색&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+				<alternative text="&#34;&#34;" comment="&#34;[체결된 주문내역] 중, &#60;주문진행건&#62;이 있다면&#34;" color="ffffff" disabled="0">
 					<qTrue>
-						<instruction text="" comment="&#34;레오 주문 중, 미체결/부분체결 주문 취소&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
-						<for text="&#34;foreach 체결주문 in 체결주문내역&#34;" comment="&#34;체결주문내역&#34;" counterVar="체결주문" startValue="" stepConst="" style="TRAVERSAL" insep="in" color="c0c0c0" disabled="0">
+						<instruction text="" comment="&#34;[미 체결 주문내역] 호출&#34;" color="80ffff" rotated="0" disabled="0"></instruction>
+						<instruction text="&#34;&#34;" comment="&#34;[미 체결 주문내역] 중 &#60;주문진행건&#62;을 [주문 취소] 호출&#34;" color="80ffff" rotated="0" disabled="0"></instruction>
+						<instruction text="&#34;&#34;" comment="&#34;&#60;주문진행건&#62;에서 모든 내역 삭제&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+						<for text="&#34;foreach 체결주문 in [체결된 주문내역] 중, &#60;주문진행건&#62;&#34;" comment="&#34;[체결된 주문내역] 중, &#60;주문진행건&#62;&#34;" counterVar="체결주문" startValue="" stepConst="" style="TRAVERSAL" insep="in" color="c0c0c0" disabled="0">
 							<qFor>
-								<instruction text="&#34;&#34;" comment="&#34;매도 최대가 / 매수 최저가 산출&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
+								<instruction text="" comment="&#34;매도 최대가 / 매수 최저가 산출&#34;" color="ffffff" rotated="0" disabled="0"></instruction>
 							</qFor>
 						</for>
-						<call text="&#34;calcAmtPrc()&#34;" comment="&#34;주문가/수량 산정&#34;" color="ffffff" disabled="0"></call>
+						<instruction text="" comment="&#34;[잔고 조회] 호출&#34;" color="80ffff" rotated="0" disabled="0"></instruction>
+						<instruction text="" comment="&#34;[시장 현황 상세정보] 호출 -&#62; bid, ask&#34;" color="80ff80" rotated="0" disabled="0"></instruction>
+						<call text="&#34;calcAmtPrc()&#34;" comment="&#34;[체결된 주문내역] 기반으로 주문가/수량 산정&#34;" color="ffffff" disabled="0"></call>
 						<call text="&#34;order()&#34;" comment="&#34;주문&#34;" color="ffffff" disabled="0"></call>
 					</qTrue>
 					<qFalse color="ffffff">
