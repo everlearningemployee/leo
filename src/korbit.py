@@ -1,6 +1,7 @@
 import yaml
 import logging
 import json
+from os import path
 
 # https://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html#backend-application-flow
 from oauthlib.oauth2 import BackendApplicationClient
@@ -24,7 +25,8 @@ def token_saver(token):
     pass
 
 
-with open('iam.yaml', encoding='utf-8') as f:
+y = path.join(path.dirname(__file__), 'iam.yaml')
+with open(y, encoding='utf-8') as f:
     iam = yaml.load(f, Loader=yaml.FullLoader)
 
 broker = OAuth2Session(
@@ -54,7 +56,7 @@ def detailed(currency_pair, **kwargs):
     :param currency_pair: 요청할 통화쌍 '''
     r = broker.get(
         url='https://api.korbit.co.kr/v1/ticker/detailed',
-        param={'currency_pair': currency_pair})
+        params={'currency_pair': currency_pair})
     if r.ok:
         return r.json()
 
@@ -68,21 +70,21 @@ def orderbook(currency_pair, **kwargs):
     :param currency_pair: 요청할 통화쌍 '''
     r = broker.get(
         url='https://api.korbit.co.kr/v1/orderbook',
-        param={'currency_pair': currency_pair})
+        params={'currency_pair': currency_pair})
     if r.ok:
         return r.json()
 
 
 def constants():
     ''' 제약조건 https://apidocs.korbit.co.kr/ko/#6c6b9f83e3
-     returns the json-encoded content of a response, if any
-       - exchange 거래 제약조건
-       - currency_pair 해당 거래의 통화쌍 (btc_krw, eth_krw, ...)
-       - tick_size 호가단위
-       - min_price 최소 주문가
-       - max_price 최대 주문가
-       - order_min_size 매수/매도 수량 최소 입력값
-       - order_max_size 매수/매도 수량 최대 입력값
+    returns the json-encoded content of a response, if any
+      - exchange 거래 제약조건
+        - currency_pair 해당 거래의 통화쌍 (btc_krw, eth_krw, ...)
+          - tick_size 호가단위
+          - min_price 최소 주문가
+          - max_price 최대 주문가
+          - order_min_size 매수/매도 수량 최소 입력값
+          - order_max_size 매수/매도 수량 최대 입력값
      '''
     r = broker.get(
         url='https://api.korbit.co.kr/v1/constants')
@@ -117,7 +119,7 @@ def volume(currency_pair, **kwargs):
     :param currency_pair: 요청할 통화쌍 '''
     res = broker.get(
         url='https://api.korbit.co.kr/v1/user/volume',
-        param={'currency_pair': currency_pair})
+        params={'currency_pair': currency_pair})
     if res.ok:
         return res.json()
 
@@ -198,6 +200,7 @@ def cancel(currency_pair, id, **kwargs):
       - already_canceled 이미 취소된 주문인 경우.     
     :param currency_pair: 요청할 통화쌍. [제약조건]에 존재하는 통화쌍은 모두 사용할수 있으며, 이 외에 다른 통화쌍은 지원하지 않는다.
     :param id: 취소할 주문의 ID. string 또는 list. list의 경우는 여러 건의 주문을 한 번에 취소. v1/user/orders/open의 응답에 들어있는 id 필드의 값이나, v1/user/orders/buy 혹은 v1/user/orders/sell의 결과로 받은 orderId를 사용할 수 있다.   '''
+    if not id: return
     res = broker.post(
         url='https://api.korbit.co.kr/v1/user/orders/cancel',
         data={'currency_pair': currency_pair,
@@ -233,9 +236,9 @@ def open(currency_pair, offset=0, limit=40, **kwargs):
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
     res = broker.get(
         url='https://api.korbit.co.kr/v1/user/orders/open',
-        param={'currency_pair': currency_pair,
-               'offset': offset,
-               'limit': limit})
+        params={'currency_pair': currency_pair,
+                'offset': offset,
+                'limit': limit})
     if res.ok:
         return res.json()
 
@@ -263,11 +266,11 @@ def orders(currency_pair, status, id, offset=0, limit=40, **kwargs):
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40    '''
     res = broker.get(
         url='https://api.korbit.co.kr/v1/user/orders',
-        param={'currency_pair': currency_pair,
-               'status': status,
-               'id': id,
-               'offset': offset,
-               'limit': limit})
+        params={'currency_pair': currency_pair,
+                'status': status,
+                'id': id,
+                'offset': offset,
+                'limit': limit})
     if res.ok:
         return res.json()
 
@@ -291,8 +294,8 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
     res = broker.get(
         url='https://api.korbit.co.kr/v1/user/transactions',
-        param={'currency_pair': currency_pair,
-               'offset': offset,
-               'limit': limit})
+        params={'currency_pair': currency_pair,
+                'offset': offset,
+                'limit': limit})
     if res.ok:
         return res.json()
