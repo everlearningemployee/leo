@@ -2,6 +2,7 @@ import yaml
 import logging
 import json
 from os import path
+from dao import *
 
 # https://requests-oauthlib.readthedocs.io/en/latest/oauth2_workflow.html#backend-application-flow
 from oauthlib.oauth2 import BackendApplicationClient
@@ -24,10 +25,6 @@ def token_saver(token):
     # TODO
     pass
 
-
-y = path.join(path.dirname(__file__), 'iam.yaml')
-with open(y, encoding='utf-8') as f:
-    iam = yaml.load(f, Loader=yaml.FullLoader)
 
 broker = OAuth2Session(
     client=BackendApplicationClient(**iam),
@@ -157,7 +154,7 @@ def buy(currency_pair, buy_type, price=None, coin_amount=None, fiat_amount=None,
     raise Exception(f'{res.status_code} Error')
 
 
-def sell(currency_pair, type, price=None, coin_amount=None, **kwargs):
+def sell(currency_pair, sell_type, price=None, coin_amount=None, **kwargs):
     '''매도 주문 https://apidocs.korbit.co.kr/ko/#95fdcac640
     returns the json-encoded content of a response, if any
       - orderId 접수된 주문 ID
@@ -169,13 +166,13 @@ def sell(currency_pair, type, price=None, coin_amount=None, **kwargs):
       - too_many_orders 사용자 당 최대 주문 건수를 초과한 경우.
       - save_failure 기타 다른 이유로 주문이 들어가지 않은 경우. 일반적으로 발생하지 않음.      
     :param currency_pair: 요청할 통화쌍. [제약조건]에 존재하는 통화쌍은 모두 사용할수 있으며, 이 외에 다른 통화쌍은 지원하지 않는다.
-    :param type: 주문 형태. "limit" : 지정가 주문, "market" : 시장가 주문.
+    :param sell_type: 주문 형태. "limit" : 지정가 주문, "market" : 시장가 주문.
     :param price: 주문 가격. 지정가 주문(type=limit)인 경우에만 유효하다. [제약조건]을 참조하여 가격을 설정해야 한다.
     :param coin_amount: 매도하고자 하는 코인의 수량 '''
     res = broker.post(
         url='https://api.korbit.co.kr/v1/user/orders/sell',
         data={'currency_pair': currency_pair,
-              'type': type,
+              'type': sell_type,
               'price': price,
               'coin_amount': coin_amount})
     if res.ok:
@@ -285,8 +282,12 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
         - currency
         - value
       - fillsDetail
-        - price 체결된 가격이며, currency와 value 필드가 들어있다. 현재는 currency가 항상 krw로 들어온다.
-        - amount 체결된 수량이며, currency와 value 필드가 들어있다. currency 필드 값에는 currency_pair에 따라 "btc", "etc" 혹은 "eth"로 들어오며, value 필드에는 선택 화폐의 체결된 수량이 들어온다.
+        - price 체결된 가격. 현재는 currency가 항상 krw로 들어온다.
+          - currency
+          - value
+        - amount 체결된 수량. currency 필드 값에는 currency_pair에 따라 "btc", "etc" 혹은 "eth"로 들어오며, value 필드에는 선택 화폐의 체결된 수량이 들어온다.
+          - currency
+          - value
         - native_amount 체결된 가격과 수량을 계산한 총 거래된 액수.
         - orderId 원 주문의 ID. 해당 체결 건이 발생하기 전에 사용자가 실행한 주문의 ID이다.        
     :param currency_pair: 요청할 통화쌍
