@@ -1,0 +1,5 @@
+# 배분비율
+distributionRate: 1
+
+# 주문 트리거링 가격변동%
+triggeringFluctuations: 3 # = 0.03
