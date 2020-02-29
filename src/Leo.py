@@ -1,19 +1,18 @@
-import korbit as API
+# import korbit as API
+import korbitMoc as API
 from calc import *
 from dao import *
 import time
 
-coin = 'xrp'
-currency = 'krw'
 
-
-def run():
+def run(coin, currency):
     currency_pair = f'{coin}_{currency}'
 
     const = API.constants()['exchange'][currency_pair]
     const.update({'currency_pair': currency_pair})
 
-    # 레오가 주문한게 없다면
+    # <주문진행건>이 없다면
+    LeoOrdr = getLeoOrder()
     if not LeoOrdr:
         # 시장가 (최종 체결 가격) 기반으로 산정하여 매도매수 주문한다
         ticker = API.detailed(**const)  # [시장 현황 상세정보]
@@ -23,13 +22,15 @@ def run():
                 coinAmount=coinAmount,
                 cashValue=cashValue,
                 **prpnst, **ticker, **const)
+        LeoOrdr = getLeoOrder()
 
     # while True:
     for i in range(1):
         LeoOrdrId = {o['orderId'] for o in LeoOrdr}  # <주문진행건> id 집합
 
         filledOrdr = API.transactions(**const)  # [체결된 주문내역] # TODO 40개 이상
-        filledOrdrId = {o['fillsDetail']['orderId'] for o in filledOrdr}  # [체결된 주문내역] id 집합
+        filledOrdrId = {o['fillsDetail']['orderId']
+                        for o in filledOrdr}  # [체결된 주문내역] id 집합
 
         # <주문진행건> 중 [체결된 주문내역]이 없다면
         if not(LeoOrdrId & filledOrdrId):
@@ -44,18 +45,31 @@ def run():
         # <주문진행건> 중 [미 체결 주문내역] [주문 취소] (부분 체결 포함)
         API.cancel(id=(LeoOrdrId & openOrdrId), **const)
         # <주문진행건>에서 모든 내역 삭제
-        LeoOrdr, LeoOrdrId = [], []
+        resetLeoOrder()
 
         # -------------------------------------------------------------------------
         # [체결된 주문내역] 중 <주문진행건>의 매도 최대가 / 매수 최저가
         sellMax, buyMin = 0, int(const[coin]['max_price'])
-        for orderId in LeoOrdrId & filledOrdrId:   
-            trns_type = filledOrdr[id]['type']  # 이거아님 TODO orderId로 구해야함 JSONPath로 할 것
-            price = int(filledOrdr[id]['fillsDetail']['price']) # 이거아님 TODO orderId로 구해야함 JSONPath로 할 것
-            if trns_type == 'sell':
-                sellPrc = max(price, sellPrc)
-            elif trns_type == 'buy':
-                buyPrc = min(price, buyPrc)
+
+        # for orderId in LeoOrdrId & filledOrdrId:
+        #     # 이거아님 TODO orderId로 구해야함 JSONPath로 할 것
+        #     trns_type = filledOrdr[id]['type']
+        #     # 이거아님 TODO orderId로 구해야함 JSONPath로 할 것
+        #     price = int(filledOrdr[id]['fillsDetail']['price']['value'])
+        #     if trns_type == 'sell':
+        #         sellPrc = max(price, sellPrc)
+        #     elif trns_type == 'buy':
+        #         buyPrc = min(price, buyPrc)
+
+        for order in filledOrdr:
+            orderId = order['fillsDetail']['orderId']
+            if orderId in LeoOrdrId:
+                trns_type = order['type']
+                price = int(order['fillsDetail']['price']['value'])
+                if trns_type == 'sell':
+                    sellPrc = max(price, sellPrc)
+                elif trns_type == 'buy':
+                    buyPrc = min(price, buyPrc)
 
         # -------------------------------------------------------------------------
         balance = API.balances()  # [잔고 조회]
@@ -72,8 +86,8 @@ def run():
                 cashValue=cashValue,
                 **prpnst, **ticker, **const)
 
+        # API call rate limit을 피한다 https://apidocs.korbit.co.kr/ko/#api-call-rate-limit
         time.sleep(cfg['interval'])
-        continue
 
 
 def sureBet(buyPrice, sellPrice, coinAmount, cashValue, **kwargs):
@@ -96,14 +110,16 @@ def sureBet(buyPrice, sellPrice, coinAmount, cashValue, **kwargs):
         cashValue=cashValue,
         **kwargs)
 
-     sellOrdrRslt = API.sell(
+    sellOrdrRslt = API.sell(
         price=sellOrdr['price'],
         coin_amount=sellOrdr['amount'],
         sell_type='limit',
         **kwargs)
 
+    newLeoOrder([buyOrdrRslt, sellOrdrRslt])
+
     return [buyOrdrRslt, sellOrdrRslt]
 
 
 if __name__ == '__main__':
-    run()
+    run(coin='xrp', currency='krw')
