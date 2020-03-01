@@ -47,18 +47,186 @@ def constants():
     return {
         "exchange": {
             "btc_krw": {
-                "tick_size": 500,
-                "min_price": 1000,
+                "tick_size": 500.000000000000000000,
+                "min_price": 1000.000000000000000000,
                 "max_price": 100000000,
-                "order_min_size": 0.00100000,
+                "order_min_size": 0.00010000,
                 "order_max_size": 100.00000000
             },
             "eth_krw": {
-                "tick_size": 50,
-                "min_price": 1000,
+                "tick_size": 50.000000000000000000,
+                "min_price": 1000.000000000000000000,
                 "max_price": 100000000,
                 "order_min_size": 0.01000000,
                 "order_max_size": 1000.00000000
+            },
+            "etc_krw": {
+                "tick_size": 10.000000000000000000,
+                "min_price": 100.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.10000000,
+                "order_max_size": 20000.00000000
+            },
+            "xrp_krw": {
+                "tick_size": 0.100000000000000000,
+                "min_price": 10.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 10.000000,
+                "order_max_size": 1000000.000000
+            },
+            "bch_krw": {
+                "tick_size": 50.000000000000000000,
+                "min_price": 1000.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.00500000,
+                "order_max_size": 400.00000000
+            },
+            "ltc_krw": {
+                "tick_size": 50.000000000000000000,
+                "min_price": 1000.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.00500000,
+                "order_max_size": 500.00000000
+            },
+            "zil_krw": {
+                "tick_size": 0.010000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 10.000000000000,
+                "order_max_size": 5000000.000000000000
+            },
+            "usdc_krw": {
+                "tick_size": 1.000000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.500000,
+                "order_max_size": 100000.000000
+            },
+            "poly_krw": {
+                "tick_size": 0.100000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 2.000000000000000000,
+                "order_max_size": 300000.000000000000000000
+            },
+            "bsv_krw": {
+                "tick_size": 100.000000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.00500000,
+                "order_max_size": 1000.00000000
+            },
+            "omg_krw": {
+                "tick_size": 5.000000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.100000000000000000,
+                "order_max_size": 30000.000000000000000000
+            },
+            "knc_krw": {
+                "tick_size": 0.100000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 1.000000000000000000,
+                "order_max_size": 200000.000000000000000000
+            },
+            "qtum_krw": {
+                "tick_size": 5.000000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.100000000000000000,
+                "order_max_size": 20000.000000000000000000
+            },
+            "bat_krw": {
+                "tick_size": 0.100000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 1.000000000000000000,
+                "order_max_size": 400000.000000000000000000
+            },
+            "xlm_krw": {
+                "tick_size": 0.100000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 3.0000000,
+                "order_max_size": 400000.0000000
+            },
+            "aergo_krw": {
+                "tick_size": 0.100000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 1.000000000000000000,
+                "order_max_size": 10000000.000000000000000000
+            },
+            "loom_krw": {
+                "tick_size": 0.100000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 1.000000000000000000,
+                "order_max_size": 800000.000000000000000000
+            },
+            "fet_krw": {
+                "tick_size": 0.100000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 2.000000000000000000,
+                "order_max_size": 500000.000000000000000000
+            },
+            "eos_krw": {
+                "tick_size": 1.000000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 1.0000,
+                "order_max_size": 15000.0000
+            },
+            "mkr_krw": {
+                "tick_size": 500.000000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.001000000000000000,
+                "order_max_size": 200.000000000000000000
+            },
+            "dai_krw": {
+                "tick_size": 1.000000000000000000,
+                "min_price": 0.500000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 1.000000000000000000,
+                "order_max_size": 100000.000000000000000000
+            },
+            "link_krw": {
+                "tick_size": 1.000000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 1.000000000000000000,
+                "order_max_size": 200000.000000000000000000
+            },
+            "btc_usdc": {
+                "tick_size": 0.500000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000.000000,
+                "order_min_size": 0.00010000,
+                "order_max_size": 100.00000000
+            },
+            "bnb_krw": {
+                "tick_size": 10.000000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 0.05000000,
+                "order_max_size": 4000.00000000
+            },
+            "trx_krw": {
+                "tick_size": 0.010000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 10.000000,
+                "order_max_size": 3000000.000000
+            },
+            "med_krw": {
+                "tick_size": 0.010000000000000000,
+                "min_price": 1.000000000000000000,
+                "max_price": 100000000,
+                "order_min_size": 1.000000,
+                "order_max_size": 15000000.000000
             }
         }
     }
@@ -240,7 +408,7 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
         {
             "timestamp": 1383707746000,
             "completedAt": 1383797746000,
-            "id": "599",    
+            "id": "599",
             "type": "sell",
             "fee": {
                 "currency": "krw",
@@ -259,7 +427,7 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
                     "currency": "krw",
                     "value": "1000000"
                 },
-                "orderId": "1002" 
+                "orderId": "1002"
             }
         },
         {
@@ -284,7 +452,7 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
                     "currency": "krw",
                     "value": "1000000"
                 },
-                "orderId": "1002" // 이거이거
+                "orderId": "1002"
             }
         }
     ]

@@ -40,7 +40,7 @@ def calcBuyOrder(distributionRate,  # propensity
 
     # 최소주문가보다 작거나 이거 저거 다 해도 "최고 매수호가" 보다 높은 가격일 경우
     if po > bidMax or po < int(min_price) or ao < int(order_min_size):
-        logging.debug("안사: %s, %s" % (ao, po))
+        logging.debug(f'안사: 주문량:{ao}, 최소주문량:{order_min_size}, 주문가:{po}, 최소주문가:{min_price}, 최고 매수호가:{bidMax}')
         po, ao = 0, 0
 
     return {"price": float(po), "amount": float(ao)}
@@ -79,6 +79,7 @@ def calcSellOrder(distributionRate,  # propensity
     # 최소주문가보다 작거나 "최저 매도호가"보다 낮은 가격일 경우
     if po < askMin or po < int(min_price) or ao < int(order_min_size):
         logging.debug("안팔아: %s, %s" % (ao, po))
+        logging.debug(f'안팔아: 주문량:{ao}, 최소주문량:{order_min_size}, 주문가:{po}, 최소주문가:{min_price}, 최저 매도호가:{askMin}')
         po, ao = 0, 0
     return {"price": float(po), "amount": float(ao)}
 

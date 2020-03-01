@@ -1,4 +1,4 @@
-import yaml
+import yaml, logging
 from os import path
 
 with open(
@@ -21,15 +21,21 @@ LEO_ORDER = 'LeoOrder.yaml'
 
 
 def getLeoOrder():
-    with open(path.join(path.dirname(__file__), LEO_ORDER), 'r') as f:
-        LeoOrdr = yaml.load(f, Loader=yaml.FullLoader)
+    try:
+        with open(path.join(path.dirname(__file__), LEO_ORDER), 'r') as f:
+            LeoOrdr = yaml.load(f, Loader=yaml.FullLoader)
+    except:
+        return None
     return LeoOrdr
 
 
 def newLeoOrder(newOrder):
+    toSave = list(filter(None, newOrder))
     with open(path.join(path.dirname(__file__), LEO_ORDER), 'a') as f:
-        yaml.dump(newOrder, f)
+        yaml.dump(toSave, f)
 
 
 def resetLeoOrder():
     open(LEO_ORDER, 'w').close()
+
+

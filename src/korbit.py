@@ -26,12 +26,12 @@ def token_saver(token):
     pass
 
 
-broker = OAuth2Session(
+korbit = OAuth2Session(
     client=BackendApplicationClient(**iam),
     auto_refresh_kwargs=iam,
     token_updater=token_saver)
 
-token = broker.fetch_token(**iam, **{
+token = korbit.fetch_token(**iam, **{
     'token_url': 'https://api.korbit.co.kr/v1/oauth2/access_token',
     'auto_refresh_url': 'https://api.korbit.co.kr/v1/oauth2/access_token'
 })
@@ -51,7 +51,7 @@ def detailed(currency_pair, **kwargs):
       - change 시작 가격 대비 현재가 차이.
       - changePercent 시작 가격 대비 현재가 차이 변화 비율.    
     :param currency_pair: 요청할 통화쌍 '''
-    r = broker.get(
+    r = korbit.get(
         url='https://api.korbit.co.kr/v1/ticker/detailed',
         params={'currency_pair': currency_pair})
     if r.ok:
@@ -65,7 +65,7 @@ def orderbook(currency_pair, **kwargs):
       - asks [가격, 미체결잔량]으로 구성된 개별 호가를 나열한다. 3번째 값은 더이상 지원하지 않고 항상 "1"로 세팅된다.
       - bids [가격, 미체결잔량]으로 구성된 개별 호가를 나열한다. 3번째 값은 더이상 지원하지 않고 항상 "1"로 세팅된다.    
     :param currency_pair: 요청할 통화쌍 '''
-    r = broker.get(
+    r = korbit.get(
         url='https://api.korbit.co.kr/v1/orderbook',
         params={'currency_pair': currency_pair})
     if r.ok:
@@ -83,7 +83,7 @@ def constants():
           - order_min_size 매수/매도 수량 최소 입력값
           - order_max_size 매수/매도 수량 최대 입력값
      '''
-    r = broker.get(
+    r = korbit.get(
         url='https://api.korbit.co.kr/v1/constants')
     if r.ok:
         return r.json()
@@ -98,7 +98,7 @@ def balances():
       - avg_price 코인의 경우 평균 매수 단가
       - avg_price_updated_at 평균 매수 단가가 계산된 시각    
     '''
-    r = broker.get(
+    r = korbit.get(
         url='https://api.korbit.co.kr/v1/user/balances')
     if r.ok:
         return r.json()
@@ -114,7 +114,7 @@ def volume(currency_pair, **kwargs):
       - total_volume 모든 통화쌍 거래의 거래량 총합(KRW).
       - timestamp 최종 거래량 및 거래 수수료 산정 시각(매시간에 한번씩 갱신).    
     :param currency_pair: 요청할 통화쌍 '''
-    res = broker.get(
+    res = korbit.get(
         url='https://api.korbit.co.kr/v1/user/volume',
         params={'currency_pair': currency_pair})
     if res.ok:
@@ -137,7 +137,7 @@ def buy(currency_pair, buy_type, price=None, coin_amount=None, fiat_amount=None,
     :param price: 가격. 지정가 주문(type=limit)인 경우에만 유효하다. [제약조건]을 참조하여 가격을 설정해야 한다.
     :param coin_amount: 매수하고자 하는 코인의 수량. 시장가 주문(type=market)일 경우 coin_amount와 fiat_amount중 하나만 설정해야 하며(둘 다 설정할 경우 HTTP Status Code 400 반환), coin_amount를 설정하는 경우 지정한 수량만큼 시장가로 매수한다.
     :param fiat_amount: 코인을 구매하는데 사용하고자 하는 금액을 지정. 원화 Market 일 경우 원화, 다른 통화 Market일 경우 해당 Market의 통화로 금액을 지정한다. 예를들어, currency_pair가 'eth_krw;인 경우 100만원 만큼의 ETH 를 구매하고 싶다면 fiat_amount에 1000000을 지정한다. 시장가 주문(type=market)일 때만 유효한 파라미터이며, coin_amount와 같이 사용할 수 없다.(둘 다 설정할 경우 HTTP Status Code 400 반환) '''
-    res = broker.post(
+    res = korbit.post(
         url='https://api.korbit.co.kr/v1/user/orders/buy',
         data={'currency_pair': currency_pair,
               'type': buy_type,
@@ -169,7 +169,7 @@ def sell(currency_pair, sell_type, price=None, coin_amount=None, **kwargs):
     :param sell_type: 주문 형태. "limit" : 지정가 주문, "market" : 시장가 주문.
     :param price: 주문 가격. 지정가 주문(type=limit)인 경우에만 유효하다. [제약조건]을 참조하여 가격을 설정해야 한다.
     :param coin_amount: 매도하고자 하는 코인의 수량 '''
-    res = broker.post(
+    res = korbit.post(
         url='https://api.korbit.co.kr/v1/user/orders/sell',
         data={'currency_pair': currency_pair,
               'type': sell_type,
@@ -197,8 +197,9 @@ def cancel(currency_pair, id, **kwargs):
       - already_canceled 이미 취소된 주문인 경우.     
     :param currency_pair: 요청할 통화쌍. [제약조건]에 존재하는 통화쌍은 모두 사용할수 있으며, 이 외에 다른 통화쌍은 지원하지 않는다.
     :param id: 취소할 주문의 ID. string 또는 list. list의 경우는 여러 건의 주문을 한 번에 취소. v1/user/orders/open의 응답에 들어있는 id 필드의 값이나, v1/user/orders/buy 혹은 v1/user/orders/sell의 결과로 받은 orderId를 사용할 수 있다.   '''
-    if not id: return
-    res = broker.post(
+    if not id:
+        return
+    res = korbit.post(
         url='https://api.korbit.co.kr/v1/user/orders/cancel',
         data={'currency_pair': currency_pair,
               'id': id}
@@ -231,7 +232,7 @@ def open(currency_pair, offset=0, limit=40, **kwargs):
     :param currency_pair: 요청할 통화쌍
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
-    res = broker.get(
+    res = korbit.get(
         url='https://api.korbit.co.kr/v1/user/orders/open',
         params={'currency_pair': currency_pair,
                 'offset': offset,
@@ -261,7 +262,7 @@ def orders(currency_pair, status, id, offset=0, limit=40, **kwargs):
     :param id: 조회할 주문의 ID. string 또는 list. list의 경우는 여러 건의 주문을 한 번에 조회
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40    '''
-    res = broker.get(
+    res = korbit.get(
         url='https://api.korbit.co.kr/v1/user/orders',
         params={'currency_pair': currency_pair,
                 'status': status,
@@ -293,7 +294,7 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
     :param currency_pair: 요청할 통화쌍
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
-    res = broker.get(
+    res = korbit.get(
         url='https://api.korbit.co.kr/v1/user/transactions',
         params={'currency_pair': currency_pair,
                 'offset': offset,
