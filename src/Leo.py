@@ -29,10 +29,11 @@ def run(coin, currency):
 
     while True:
         LeoOrdrId = {o['orderId'] for o in LeoOrdr}  # <주문진행건> id 집합
+        logging.debug(f'<주문진행건> id 집합 {LeoOrdrId}')
 
         filledOrdr = API.transactions(**const)  # [체결된 주문내역] # TODO 40개 이상
-        logging.debug(f'filledOrdr: {filledOrdr[-3]}')
         filledOrdrId = {o['fillsDetail']['orderId'] for o in filledOrdr}  # [체결된 주문내역] id 집합
+        logging.debug(f'[체결된 주문내역] id 집합 {filledOrdrId}')
 
         if not(LeoOrdrId & filledOrdrId):
             logging.debug('<주문진행건> 중 [체결된 주문내역]이 없음')
@@ -51,7 +52,7 @@ def run(coin, currency):
 
         # -------------------------------------------------------------------------
         # [체결된 주문내역] 중 <주문진행건>의 매도 최대가 / 매수 최저가
-        sellMax, buyMin = 0, float(const[coin]['max_price'])
+        sellPrc, buyPrc = 0, float(const[coin]['max_price'])
 
         for order in filledOrdr:
             orderId = order['fillsDetail']['orderId']

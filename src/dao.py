@@ -1,4 +1,4 @@
-import yaml, logging
+import yaml, json, logging
 from os import path
 
 with open(
@@ -17,13 +17,15 @@ with open(
     cfg = yaml.load(f, Loader=yaml.FullLoader)
 
 
-LEO_ORDER = 'LeoOrder.yaml'
+# LEO_ORDER = 'LeoOrder.yaml'
+LEO_ORDER = 'LeoOrder.json'
 
 
 def getLeoOrder():
     try:
         with open(path.join(path.dirname(__file__), LEO_ORDER), 'r') as f:
-            LeoOrdr = yaml.load(f, Loader=yaml.FullLoader)
+            # LeoOrdr = yaml.load(f, Loader=yaml.FullLoader)
+            LeoOrdr = json.load(f)
     except:
         return None
     return LeoOrdr
@@ -32,7 +34,8 @@ def getLeoOrder():
 def newLeoOrder(newOrder):
     toSave = list(filter(None, newOrder))
     with open(path.join(path.dirname(__file__), LEO_ORDER), 'a') as f:
-        yaml.dump(toSave, f)
+        # yaml.dump(toSave, f)
+        json.dump(toSave, f)
 
 
 def resetLeoOrder():
