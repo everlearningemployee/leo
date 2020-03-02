@@ -1,5 +1,9 @@
 import logging.config
 
+def recordOrder(log):    
+    orderLogging.info(','.join([str(i) for i in log]))
+
+
 logging.config.dictConfig({
     'version': 1,
     'formatters': {
@@ -72,9 +76,6 @@ logging.config.dictConfig({
 orderLogging = logging.getLogger('order')
 tickerLogging = logging.getLogger('ticker')
 transactionsLogging = logging.getLogger('trans')
-
-def recordOrder(log):    
-    orderLogging.info(','.join([str(i) for i in log]))
 
 
 

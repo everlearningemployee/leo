@@ -28,13 +28,13 @@ def token_saver(token):
 
 korbit = OAuth2Session(
     client=BackendApplicationClient(**iam),
+    auto_refresh_url='https://api.korbit.co.kr/v1/oauth2/access_token',
     auto_refresh_kwargs=iam,
     token_updater=token_saver)
 
-token = korbit.fetch_token(**iam, **{
-    'token_url': 'https://api.korbit.co.kr/v1/oauth2/access_token',
-    'auto_refresh_url': 'https://api.korbit.co.kr/v1/oauth2/access_token'
-})
+token = korbit.fetch_token(
+    token_url='https://api.korbit.co.kr/v1/oauth2/access_token',
+    **iam)
 
 
 def detailed(currency_pair, **kwargs):
