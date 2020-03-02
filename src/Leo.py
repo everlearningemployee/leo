@@ -31,6 +31,7 @@ def run(coin, currency):
         LeoOrdrId = {o['orderId'] for o in LeoOrdr}  # <주문진행건> id 집합
 
         filledOrdr = API.transactions(**const)  # [체결된 주문내역] # TODO 40개 이상
+        logging.debug(f'filledOrdr: {filledOrdr[-3]}')
         filledOrdrId = {o['fillsDetail']['orderId'] for o in filledOrdr}  # [체결된 주문내역] id 집합
 
         if not(LeoOrdrId & filledOrdrId):
