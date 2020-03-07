@@ -1,3 +1,4 @@
+import sys
 import korbit as API
 from decimal import Decimal
 # import korbitMoc as API
@@ -32,10 +33,6 @@ def run(coin, currency):
         # logging.debug(f'<주문진행건> id 집합 {LeoOrdrId}')
 
         filledOrdr = API.transactions(**const, limit=10)  # [체결된 주문내역] # TODO 최근 몇개만... 몇개라는거 이거 설정으로 뺄까?
-        if not filledOrdr:
-            logging.debug(f'아니 씨발 이게 왜 자꾸 None으로 떨어지는거야 filledOrdr={filledOrdr}')
-            time.sleep(5)
-            continue
         filledOrdrId = {o['fillsDetail']['orderId'] for o in filledOrdr}  # [체결된 주문내역] id 집합
         # logging.debug(f'[체결된 주문내역] id 집합 {filledOrdrId}')
 
@@ -56,8 +53,7 @@ def run(coin, currency):
 
         # -------------------------------------------------------------------------
         # [체결된 주문내역] 중 <주문진행건>의 매도 최대가 / 매수 최저가
-        sellPrc, buyPrc = 0, float(const[coin]['max_price'])
-
+        sellPrc, buyPrc = 0, sys.maxsize
         for order in filledOrdr:
             orderId = order['fillsDetail']['orderId']
             if orderId in LeoOrdrId:
@@ -65,10 +61,10 @@ def run(coin, currency):
                 price = float(order['fillsDetail']['price']['value'])
                 if trns_type == 'sell':
                     sellPrc = max(price, sellPrc)
-                    sellId = order['fillsDetail']['orderId']
+                    sellId = orderId
                 elif trns_type == 'buy':
                     buyPrc = min(price, buyPrc)
-                    buyId = order['fillsDetail']['orderId']
+                    buyId = orderId
 
         # -------------------------------------------------------------------------
         coinAmount, cashValue = getBalance(coin=coin, currency=currency)  # 코인보유량, 현금보유액

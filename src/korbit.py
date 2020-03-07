@@ -308,7 +308,7 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
           if res.json():
             return res.json()
       else:
-          raise new Exception(f'reponse=[{res.raw}]')
+          raise Exception(f'reponse=[{res.raw}]')
     except:
       traceback.print_exc()
       time.sleep(10)

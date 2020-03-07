@@ -27,14 +27,19 @@ def calcBuyOrder(distributionRate,  # propensity
     am = dcml(order_min_size)  # 최소주문량
     ts = dcml(tick_size)  # 호가단위
     bidMax = dcml(bid)  # 최고 매수호가
+    logging.debug(f'calcBuyOrder: b={b}, t={t}, pf={pf}, ai={ai}, vc={vc}, am={am}, ts={ts}, bidMax={bidMax}')
 
     po = min(pf * (1 - t), bidMax)  # "최고 매수호가"보다 낮은 가격으로 주문해야 수수료가 싸다
     ao = (b * vc - po * ai) / (po * (1 + b))
+    logging.debug(f'po={po}, ao={ao}')
 
     # 최소주문량보다 작을 경우
     if ao < am:
+        logging.debug(f'ao(={ao}) < am(={am}): 다시계산!')
         ao = am
-        po = (b * vc) / (ai + am * (1 + b))
+        # 이게 맞지만 거래가 발생 안해서 주석 처리함 TODO 나중에 주석 풀을 것
+        # po = (b * vc) / (ai + am * (1 + b))
+        logging.debug(f'po={po}, ao={ao}')
 
     # 호가단위로 보정
     po = math.floor(po / ts) * ts
@@ -65,14 +70,19 @@ def calcSellOrder(distributionRate,  # propensity
     am = dcml(order_min_size)  # 최소주문량
     ts = dcml(tick_size)  # 호가단위
     askMin = dcml(ask)  # 최저 매도호가
+    logging.debug(f'calcSellOrder: b={b}, t={t}, pf={pf}, ai={ai}, vc={vc}, am={am}, ts={ts}, askMin={askMin}')
 
     po = max(pf * (1 + t), askMin)  # "최저 매도호가"보다 높은 가격으로 주문해야 수수료가 싸다
     ao = (po * ai - b * vc) / (po * (1 + b))
+    logging.debug(f'po={po}, ao={ao}')
 
     # 최소주문량보다 작을 경우
     if ao < am:
+        logging.debug(f'ao(={ao}) < am(={am}): 다시계산!')
         ao = am
-        po = (b * vc) / (ai - am * (1 + b))
+        # 이게 맞지만 거래가 발생 안해서 주석 처리함 TODO 나중에 주석 풀을 것
+        # po = (b * vc) / (ai - am * (1 + b))
+        logging.debug(f'po={po}, ao={ao}')
 
     # 호가단위로 보정
     po = math.ceil(po / ts) * ts
