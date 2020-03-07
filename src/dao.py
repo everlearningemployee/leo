@@ -10,11 +10,13 @@ with open(
         path.join(path.dirname(__file__), 'propensity.yaml'),
         encoding='utf-8') as f:
     prpnst = yaml.load(f, Loader=yaml.FullLoader)
+    # TODO 설정 출력할 것
 
 with open(
         path.join(path.dirname(__file__), 'config.yaml'),
         encoding='utf-8') as f:
     cfg = yaml.load(f, Loader=yaml.FullLoader)
+    # TODO 설정 출력할 것
 
 
 # LEO_ORDER = 'LeoOrder.yaml'

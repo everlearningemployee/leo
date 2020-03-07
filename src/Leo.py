@@ -29,11 +29,15 @@ def run(coin, currency):
 
     while True:
         LeoOrdrId = {o['orderId'] for o in LeoOrdr}  # <주문진행건> id 집합
-        logging.debug(f'<주문진행건> id 집합 {LeoOrdrId}')
+        # logging.debug(f'<주문진행건> id 집합 {LeoOrdrId}')
 
-        filledOrdr = API.transactions(**const)  # [체결된 주문내역] # TODO 40개 이상
+        filledOrdr = API.transactions(**const, limit=10)  # [체결된 주문내역] # TODO 최근 몇개만... 몇개라는거 이거 설정으로 뺄까?
+        if not filledOrdr:
+            logging.debug(f'아니 씨발 이게 왜 자꾸 None으로 떨어지는거야 filledOrdr={filledOrdr}')
+            time.sleep(5)
+            continue
         filledOrdrId = {o['fillsDetail']['orderId'] for o in filledOrdr}  # [체결된 주문내역] id 집합
-        logging.debug(f'[체결된 주문내역] id 집합 {filledOrdrId}')
+        # logging.debug(f'[체결된 주문내역] id 집합 {filledOrdrId}')
 
         if not(LeoOrdrId & filledOrdrId):
             logging.debug('<주문진행건> 중 [체결된 주문내역]이 없음')
@@ -81,6 +85,7 @@ def run(coin, currency):
 
 
 def getBalance(currency, coin):
+    # TODO 추이 파악하게 로그를 찍자
     balance = API.balances()  # [잔고 조회]
     balance_coin, balance_cash = balance[coin], balance[currency]
     coinAmount = float(balance_coin['available']) + float(balance_coin['trade_in_use'])  # 코인보유량

@@ -7,6 +7,7 @@ import sys
 def dcml(f):
     return decimal.Decimal(str(f))
 
+# TODO 나중에 검산해보게 로그를 찍자 
 
 def calcBuyOrder(distributionRate,  # propensity
                  triggeringFluctuations,  # propensity

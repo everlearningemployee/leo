@@ -1,3 +1,5 @@
+import traceback
+import time
 import yaml
 import logging
 import json
@@ -22,7 +24,7 @@ errorSymbol = {
 
 
 def token_saver(token):
-    # TODO
+    # 뭘 해야할까?
     pass
 
 
@@ -35,6 +37,8 @@ korbit = OAuth2Session(
 token = korbit.fetch_token(
     token_url='https://api.korbit.co.kr/v1/oauth2/access_token',
     **iam)
+
+# TODO 여기 메소드들은 다 로그를 찍자. 흐름을 남기자
 
 
 def detailed(currency_pair, **kwargs):
@@ -294,10 +298,19 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
     :param currency_pair: 요청할 통화쌍
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
-    res = korbit.get(
-        url='https://api.korbit.co.kr/v1/user/transactions',
-        params={'currency_pair': currency_pair,
-                'offset': offset,
-                'limit': limit})
-    if res.ok:
-        return res.json()
+    try:
+      res = korbit.get(
+          url='https://api.korbit.co.kr/v1/user/transactions',
+          params={'currency_pair': currency_pair,
+                  'offset': offset,
+                  'limit': limit})
+      if res.ok:
+          if res.json():
+            return res.json()
+      else:
+          raise new Exception(f'reponse=[{res.raw}]')
+    except:
+      traceback.print_exc()
+      time.sleep(10)
+      logging.error('10초 기다렸다. 다시간다.')
+      transactions(currency_pair, offset, limit, **kwargs)
