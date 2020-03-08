@@ -21,11 +21,12 @@ with open(
 
 # LEO_ORDER = 'LeoOrder.yaml'
 LEO_ORDER = 'LeoOrder.json'
-
+# leoOrderLog = path.join(path.dirname(__file__), LEO_ORDER)
+leoOrderLog = path.join('/leo/order', LEO_ORDER)
 
 def getLeoOrder():
     try:
-        with open(path.join(path.dirname(__file__), LEO_ORDER), 'r') as f:
+        with open(leoOrderLog, 'r') as f:
             # LeoOrdr = yaml.load(f, Loader=yaml.FullLoader)
             LeoOrdr = json.load(f)
     except:
@@ -35,7 +36,7 @@ def getLeoOrder():
 
 def newLeoOrder(newOrder):
     toSave = list(filter(None, newOrder))
-    with open(path.join(path.dirname(__file__), LEO_ORDER), 'a') as f:
+    with open(leoOrderLog, 'a') as f:
         # yaml.dump(toSave, f)
         json.dump(toSave, f)
 
