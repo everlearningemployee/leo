@@ -1,7 +1,6 @@
+import sys
+import traceback
 import logging.config
-
-def recordOrder(log):    
-    orderLogging.info(','.join([str(i) for i in log]))
 
 
 logging.config.dictConfig({
@@ -84,9 +83,26 @@ logging.config.dictConfig({
     },
 })
 
+
+def recordOrder(log):
+    orderLogging.info(','.join([str(i) for i in log]))
+
+
+def exception_hook(type, value, tb):
+    logging.error('='*80)
+    logging.error(f'Type: {type}')
+    logging.error(f'Value: {value}')
+    t = traceback.format_exception(type, value, tb)
+    t = [i.rstrip().split('\n') for i in t]
+    for i in t:
+        for j in i:
+            logging.error(j)
+    logging.error('-'*80)
+
+
+sys.excepthook = exception_hook
+
+
 orderLogging = logging.getLogger('order')
 tickerLogging = logging.getLogger('ticker')
 transactionsLogging = logging.getLogger('trans')
-
-
-

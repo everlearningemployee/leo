@@ -42,11 +42,13 @@ def run(coin, currency):
             continue
 
         # <주문진행건> 중 [체결된 주문내역]이 있다면 (부분 체결 포함)
+        logging.info(f'체결 {LeoOrdrId & filledOrdrId}')
 
         # -------------------------------------------------------------------------
-        openOrdr = API.open(**const)  # [미 체결 주문내역] # TODO 40개 이상
-        openOrdrId = {o['id'] for o in openOrdr}  # [미 체결 주문내역] id 집합
-        logging.debug(f'<주문진행건> 중 [미 체결 주문내역] {(LeoOrdrId & openOrdrId)} [주문 취소] (부분 체결 포함)')
+        # openOrdr = API.open(**const)  # [미 체결 주문내역] # TODO 40개 이상
+        # openOrdrId = {o['id'] for o in openOrdr}  # [미 체결 주문내역] id 집합
+        openOrdrId = LeoOrdrId - filledOrdrId
+        logging.info(f'<주문진행건> 중 [미 체결 주문내역] {(LeoOrdrId & openOrdrId)} [주문 취소] (부분 체결 포함)')
         API.cancel(id=(LeoOrdrId & openOrdrId), **const)
         # <주문진행건>에서 모든 내역 삭제
         resetLeoOrder()
@@ -54,7 +56,7 @@ def run(coin, currency):
         # -------------------------------------------------------------------------
         # [체결된 주문내역] 중 <주문진행건>의 매도 최대가 / 매수 최저가
         sellPrc, buyPrc = 0, sys.maxsize
-        sellId, buyId = None, None # TODO 함수 파라미터 정리해야겠어
+        sellId, buyId = None, None  # TODO 함수 파라미터 정리해야겠어
         for order in filledOrdr:
             orderId = order['fillsDetail']['orderId']
             if orderId in LeoOrdrId:
@@ -98,6 +100,7 @@ def sureBet(buyPrice, sellPrice, coinAmount, cashValue, buyId=None, sellId=None,
         coinAmount=coinAmount,
         cashValue=cashValue,
         **kwargs)
+    logging.info(f'매수 주문: buyOrdr={buyOrdr}')
     if buyOrdr['price'] != 0 and buyOrdr['amount'] != 0:
         buyOrdrRslt = API.buy(
             price=buyOrdr['price'],
@@ -108,12 +111,15 @@ def sureBet(buyPrice, sellPrice, coinAmount, cashValue, buyId=None, sellId=None,
         recordOrder([
             'buy', buyId, buyPrice, coinAmount, cashValue,
             buyOrdrRslt['orderId'], buyOrdr['price'], buyOrdr['amount'], ])
+    else:
+        logging.info('매수 주문 하지 않음')
 
     sellOrdr = calcSellOrder(
         filledPrice=sellPrice,
         coinAmount=coinAmount,
         cashValue=cashValue,
         **kwargs)
+    logging.info(f'매도 주문: sellOrdr={sellOrdr}')
     if sellOrdr['price'] != 0 and sellOrdr['amount'] != 0:
         sellOrdrRslt = API.sell(
             price=sellOrdr['price'],
@@ -124,6 +130,8 @@ def sureBet(buyPrice, sellPrice, coinAmount, cashValue, buyId=None, sellId=None,
         recordOrder([
             'sell', sellId, sellPrice, coinAmount, cashValue,
             sellOrdrRslt['orderId'], sellOrdr['price'], sellOrdr['amount'], ])
+    else:
+        logging.info('매도 주문 하지 않음')
 
     newLeoOrder([buyOrdrRslt, sellOrdrRslt])
 

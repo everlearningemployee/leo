@@ -42,6 +42,7 @@ def newLeoOrder(newOrder):
 
 
 def resetLeoOrder():
-    open(LEO_ORDER, 'w').close()
+    logging.debug('reset LeoOrder')
+    open(leoOrderLog, 'w').close()
 
 
