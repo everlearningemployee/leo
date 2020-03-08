@@ -54,6 +54,7 @@ def run(coin, currency):
         # -------------------------------------------------------------------------
         # [체결된 주문내역] 중 <주문진행건>의 매도 최대가 / 매수 최저가
         sellPrc, buyPrc = 0, sys.maxsize
+        sellId, buyId = None, None # TODO 함수 파라미터 정리해야겠어
         for order in filledOrdr:
             orderId = order['fillsDetail']['orderId']
             if orderId in LeoOrdrId:
