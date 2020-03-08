@@ -29,11 +29,11 @@ def run(coin, currency):
         LeoOrdr = getLeoOrder()
 
     while True:
-        LeoOrdrId = {o['orderId'] for o in LeoOrdr}  # <주문진행건> id 집합
+        LeoOrdrId = {str(o['orderId']) for o in LeoOrdr}  # <주문진행건> id 집합
         # logging.debug(f'<주문진행건> id 집합 {LeoOrdrId}')
 
         filledOrdr = API.transactions(**const, limit=10)  # [체결된 주문내역] # TODO 최근 몇개만... 몇개라는거 이거 설정으로 뺄까?
-        filledOrdrId = {o['fillsDetail']['orderId'] for o in filledOrdr}  # [체결된 주문내역] id 집합
+        filledOrdrId = {str(o['fillsDetail']['orderId']) for o in filledOrdr}  # [체결된 주문내역] id 집합
         # logging.debug(f'[체결된 주문내역] id 집합 {filledOrdrId}')
 
         if not(LeoOrdrId & filledOrdrId):

@@ -209,12 +209,13 @@ def cancel(currency_pair, id, **kwargs):
               'id': id}
     )
     if res.ok:
-        resJson = res.json()
-        status = resJson['status']
-        if status == 'success':
-            return resJson
-        else:
-            raise Exception(errorSymbol[status])
+        return resJson
+        # resJson = res.json()
+        # status = resJson['status'] # TODO 이거 배열로 들어오네
+        # if status == 'success':
+        #     return resJson
+        # else:
+        #     raise Exception(errorSymbol[status])
     raise Exception(f'{res.status_code} Error')
 
 
@@ -298,19 +299,19 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
     :param currency_pair: 요청할 통화쌍
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
+    logging.debug(f'call transactions({currency_pair})')
     try:
-      res = korbit.get(
-          url='https://api.korbit.co.kr/v1/user/transactions',
-          params={'currency_pair': currency_pair,
-                  'offset': offset,
-                  'limit': limit})
-      if res.ok:
-          if res.json():
+        res = korbit.get(
+            url='https://api.korbit.co.kr/v1/user/transactions',
+            params={'currency_pair': currency_pair,
+                    'offset': offset,
+                    'limit': limit})
+        if res.ok and res.json():
             return res.json()
-      else:
-          raise Exception(f'reponse=[{res.raw}]')
+        else:
+            raise Exception(f'res.headers=[{res.headers}], res.text=[{res.text}]')
     except:
-      traceback.print_exc()
-      time.sleep(10)
-      logging.error('10초 기다렸다. 다시간다.')
-      transactions(currency_pair, offset, limit, **kwargs)
+        traceback.print_exc()
+        time.sleep(10)
+        logging.error('10초 기다렸다. 다시간다.')
+        transactions(currency_pair, offset, limit, **kwargs)
