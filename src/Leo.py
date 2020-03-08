@@ -45,9 +45,9 @@ def run(coin, currency):
         logging.info(f'체결 {LeoOrdrId & filledOrdrId}')
 
         # -------------------------------------------------------------------------
-        # openOrdr = API.open(**const)  # [미 체결 주문내역] # TODO 40개 이상
-        # openOrdrId = {o['id'] for o in openOrdr}  # [미 체결 주문내역] id 집합
-        openOrdrId = LeoOrdrId - filledOrdrId
+        openOrdr = API.open(**const)  # [미 체결 주문내역] # TODO 40개 이상
+        openOrdrId = {o['id'] for o in openOrdr}  # [미 체결 주문내역] id 집합
+        # openOrdrId = LeoOrdrId - filledOrdrId
         logging.info(f'<주문진행건> 중 [미 체결 주문내역] {(LeoOrdrId & openOrdrId)} [주문 취소] (부분 체결 포함)')
         API.cancel(id=(LeoOrdrId & openOrdrId), **const)
         # <주문진행건>에서 모든 내역 삭제

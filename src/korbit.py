@@ -219,7 +219,7 @@ def cancel(currency_pair, id, **kwargs):
               'id': id}
     )
     if res.ok:
-        return resJson
+        return res.json()
         # resJson = res.json()
         # status = resJson['status'] # TODO 이거 배열로 들어오네
         # if status == 'success':
