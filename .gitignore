@@ -1,5 +1,6 @@
 .vscode
 __pycache__
+iam.yaml
 *.log
 nohup.out
 LeoOrder.json
