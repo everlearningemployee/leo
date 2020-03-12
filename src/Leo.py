@@ -26,11 +26,10 @@ def run(coin, currency):
                 coinAmount=coinAmount,
                 cashValue=cashValue,
                 **prpnst, **ticker, **const)
-        LeoOrdr = getLeoOrder()
 
     while True:
-        LeoOrdrId = {str(o['orderId']) for o in LeoOrdr}  # <주문진행건> id 집합
-        # logging.debug(f'<주문진행건> id 집합 {LeoOrdrId}')
+        LeoOrdrId = {str(o['orderId']) for o in getLeoOrder()}  # <주문진행건> id 집합
+        logging.debug(f'<주문진행건> id 집합 {LeoOrdrId}')
 
         filledOrdr = API.transactions(**const, limit=10)  # [체결된 주문내역] # TODO 최근 몇개만... 몇개라는거 이거 설정으로 뺄까?
         filledOrdrId = {str(o['fillsDetail']['orderId']) for o in filledOrdr}  # [체결된 주문내역] id 집합
@@ -43,30 +42,35 @@ def run(coin, currency):
 
         # <주문진행건> 중 [체결된 주문내역]이 있다면 (부분 체결 포함)
         logging.info(f'체결 {LeoOrdrId & filledOrdrId}')
+        for ordr in filledOrdr:
+            if ordr['fillsDetail']['orderId'] in LeoOrdrId:
+                transactionsLogging.info(ordr)
 
         # -------------------------------------------------------------------------
-        openOrdr = API.open(**const)  # [미 체결 주문내역] # TODO 40개 이상
-        openOrdrId = {o['id'] for o in openOrdr}  # [미 체결 주문내역] id 집합
-        # openOrdrId = LeoOrdrId - filledOrdrId
-        logging.info(f'<주문진행건> 중 [미 체결 주문내역] {(LeoOrdrId & openOrdrId)} [주문 취소] (부분 체결 포함)')
-        API.cancel(id=(LeoOrdrId & openOrdrId), **const)
+        # openOrdr = API.open(**const)  # [미 체결 주문내역] # TODO 40개 이상
+        # openOrdrId = {str(o['id']) for o in openOrdr}  # [미 체결 주문내역] id 집합
+        # logging.info(f'[미 체결 주문내역] {openOrdrId}')
+        # logging.info(f'<주문진행건> 중 [미 체결 주문내역] {openOrdrId} [주문 취소] (부분 체결 포함)')
+        openOrdrId = LeoOrdrId - filledOrdrId
+        logging.info(f'<주문진행건> 중 [체결된 주문내역]을 제외한 {openOrdrId} [주문 취소] (부분 체결 포함)')
+        if openOrdrId:
+            API.cancel(id=openOrdrId, **const)
         # <주문진행건>에서 모든 내역 삭제
         resetLeoOrder()
 
         # -------------------------------------------------------------------------
         # [체결된 주문내역] 중 <주문진행건>의 매도 최대가 / 매수 최저가
         sellPrc, buyPrc = 0, sys.maxsize
-        sellId, buyId = None, None  # TODO 함수 파라미터 정리해야겠어
+        sellId, buyId = None, None  # TODO 로깅 위한 함수 파라미터 정리해야겠어
         for order in filledOrdr:
             orderId = order['fillsDetail']['orderId']
             if orderId in LeoOrdrId:
-                trns_type = order['type']
                 price = float(order['fillsDetail']['price']['value'])
-                if trns_type == 'sell':
-                    sellPrc = max(price, sellPrc)
+                if sellPrc < price: # 보다 비싸게 거래한걸 매도가의 기준으로
+                    sellPrc = price
                     sellId = orderId
-                elif trns_type == 'buy':
-                    buyPrc = min(price, buyPrc)
+                elif buyPrc > price: # 보다 싸게 거래한걸 매수가의 기준으로
+                    buyPrc = price
                     buyId = orderId
 
         # -------------------------------------------------------------------------

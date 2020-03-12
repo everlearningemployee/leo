@@ -28,17 +28,51 @@ def token_saver(token):
     pass
 
 
-korbit = OAuth2Session(
-    client=BackendApplicationClient(**iam),
-    auto_refresh_url='https://api.korbit.co.kr/v1/oauth2/access_token',
-    auto_refresh_kwargs=iam,
-    token_updater=token_saver)
+korbit = OAuth2Session(client=BackendApplicationClient(**iam),
+                       auto_refresh_url='https://api.korbit.co.kr/v1/oauth2/access_token',
+                       auto_refresh_kwargs=iam,
+                       token_updater=token_saver)
 
-token = korbit.fetch_token(
-    token_url='https://api.korbit.co.kr/v1/oauth2/access_token',
-    **iam)
+token = korbit.fetch_token(token_url='https://api.korbit.co.kr/v1/oauth2/access_token', **iam)
 
-# TODO 여기 메소드들은 다 로그를 찍자. 흐름을 남기자
+
+def get(url, params=None, data=None, headers=None, cookies=None, files=None, auth=None, timeout=None,
+        allow_redirects=True, proxies=None, hooks=None, stream=None, verify=None, cert=None, json=None):
+    logging.debug(f'url=[{url}], params={params}')
+    res = korbit.get(
+        url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
+        allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
+        json=json)
+    # logging.debug(f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{str(res.text})[:80]])
+    logging.debug(f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
+    if res.ok:
+        return res.json()
+    elif res.status_code == 504:  # Gateway timeout
+        time.sleep(1)
+        get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
+            allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
+            json=json)
+    else:
+        raise Exception(f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
+    # except:
+    #     traceback.print_exc()
+    #     time.sleep(10)
+    #     logging.error('10초 기다렸다. 다시간다.')
+    #     transactions(currency_pair, offset, limit, **kwargs)
+
+
+def post(url, data=None, json=None, params=None, headers=None, cookies=None, files=None, auth=None, timeout=None,
+         allow_redirects=True, proxies=None, hooks=None, stream=None, verify=None, cert=None):
+    logging.debug(f'url=[{url}], data={data}')
+    res = korbit.post(
+        url=url, data=data, json=json, params=params, headers=headers, cookies=cookies, files=files, auth=auth,
+        timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify,
+        cert=cert)
+    logging.debug(f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
+    if res.ok:
+        return res.json()
+    else:
+        raise Exception(f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
 
 
 def detailed(currency_pair, **kwargs):
@@ -55,12 +89,8 @@ def detailed(currency_pair, **kwargs):
       - change 시작 가격 대비 현재가 차이.
       - changePercent 시작 가격 대비 현재가 차이 변화 비율.    
     :param currency_pair: 요청할 통화쌍 '''
-    logging.debug(f'call detailed: currency_pair={currency_pair}')
-    r = korbit.get(
-        url='https://api.korbit.co.kr/v1/ticker/detailed',
-        params={'currency_pair': currency_pair})
-    if r.ok:
-        return r.json()
+    return get(url='https://api.korbit.co.kr/v1/ticker/detailed',
+               params={'currency_pair': currency_pair})
 
 
 def orderbook(currency_pair, **kwargs):
@@ -70,12 +100,8 @@ def orderbook(currency_pair, **kwargs):
       - asks [가격, 미체결잔량]으로 구성된 개별 호가를 나열한다. 3번째 값은 더이상 지원하지 않고 항상 "1"로 세팅된다.
       - bids [가격, 미체결잔량]으로 구성된 개별 호가를 나열한다. 3번째 값은 더이상 지원하지 않고 항상 "1"로 세팅된다.    
     :param currency_pair: 요청할 통화쌍 '''
-    logging.debug(f'call orderbook: currency_pair={currency_pair}')
-    r = korbit.get(
-        url='https://api.korbit.co.kr/v1/orderbook',
-        params={'currency_pair': currency_pair})
-    if r.ok:
-        return r.json()
+    return get(url='https://api.korbit.co.kr/v1/orderbook',
+               params={'currency_pair': currency_pair})
 
 
 def constants():
@@ -89,11 +115,7 @@ def constants():
           - order_min_size 매수/매도 수량 최소 입력값
           - order_max_size 매수/매도 수량 최대 입력값
      '''
-    logging.debug(f'call constants')
-    r = korbit.get(
-        url='https://api.korbit.co.kr/v1/constants')
-    if r.ok:
-        return r.json()
+    return get(url='https://api.korbit.co.kr/v1/constants')
 
 
 def balances():
@@ -105,11 +127,7 @@ def balances():
       - avg_price 코인의 경우 평균 매수 단가
       - avg_price_updated_at 평균 매수 단가가 계산된 시각    
     '''
-    logging.debug(f'call constants')
-    r = korbit.get(
-        url='https://api.korbit.co.kr/v1/user/balances')
-    if r.ok:
-        return r.json()
+    return get(url='https://api.korbit.co.kr/v1/user/balances')
 
 
 def volume(currency_pair, **kwargs):
@@ -122,12 +140,8 @@ def volume(currency_pair, **kwargs):
       - total_volume 모든 통화쌍 거래의 거래량 총합(KRW).
       - timestamp 최종 거래량 및 거래 수수료 산정 시각(매시간에 한번씩 갱신).    
     :param currency_pair: 요청할 통화쌍 '''
-    logging.debug(f'call volume: currency_pair={currency_pair}')
-    res = korbit.get(
-        url='https://api.korbit.co.kr/v1/user/volume',
-        params={'currency_pair': currency_pair})
-    if res.ok:
-        return res.json()
+    return get(url='https://api.korbit.co.kr/v1/user/volume',
+               params={'currency_pair': currency_pair})
 
 
 def buy(currency_pair, buy_type, price=None, coin_amount=None, fiat_amount=None, **kwargs):
@@ -146,23 +160,17 @@ def buy(currency_pair, buy_type, price=None, coin_amount=None, fiat_amount=None,
     :param price: 가격. 지정가 주문(type=limit)인 경우에만 유효하다. [제약조건]을 참조하여 가격을 설정해야 한다.
     :param coin_amount: 매수하고자 하는 코인의 수량. 시장가 주문(type=market)일 경우 coin_amount와 fiat_amount중 하나만 설정해야 하며(둘 다 설정할 경우 HTTP Status Code 400 반환), coin_amount를 설정하는 경우 지정한 수량만큼 시장가로 매수한다.
     :param fiat_amount: 코인을 구매하는데 사용하고자 하는 금액을 지정. 원화 Market 일 경우 원화, 다른 통화 Market일 경우 해당 Market의 통화로 금액을 지정한다. 예를들어, currency_pair가 'eth_krw;인 경우 100만원 만큼의 ETH 를 구매하고 싶다면 fiat_amount에 1000000을 지정한다. 시장가 주문(type=market)일 때만 유효한 파라미터이며, coin_amount와 같이 사용할 수 없다.(둘 다 설정할 경우 HTTP Status Code 400 반환) '''
-    logging.debug(
-        f'call buy: currency_pair={currency_pair}, type={buy_type}, price={price}, coin_amount={coin_amount}, fiat_amount={fiat_amount}')
-    res = korbit.post(
-        url='https://api.korbit.co.kr/v1/user/orders/buy',
-        data={'currency_pair': currency_pair,
-              'type': buy_type,
-              'price': price,
-              'coin_amount': coin_amount,
-              'fiat_amount': fiat_amount})
-    if res.ok:
-        resJson = res.json()
-        status = resJson['status']
-        if status == 'success':
-            return resJson
-        else:
-            raise Exception(errorSymbol[status])
-    raise Exception(f'{res.status_code} Error')
+    resJson = post(url='https://api.korbit.co.kr/v1/user/orders/buy',
+                   data={'currency_pair': currency_pair,
+                         'type': buy_type,
+                         'price': price,
+                         'coin_amount': coin_amount,
+                         'fiat_amount': fiat_amount})
+    status = resJson['status']
+    if status == 'success':
+        return resJson
+    else:
+        raise Exception(errorSymbol[status])
 
 
 def sell(currency_pair, sell_type, price=None, coin_amount=None, **kwargs):
@@ -180,22 +188,16 @@ def sell(currency_pair, sell_type, price=None, coin_amount=None, **kwargs):
     :param sell_type: 주문 형태. "limit" : 지정가 주문, "market" : 시장가 주문.
     :param price: 주문 가격. 지정가 주문(type=limit)인 경우에만 유효하다. [제약조건]을 참조하여 가격을 설정해야 한다.
     :param coin_amount: 매도하고자 하는 코인의 수량 '''
-    logging.debug(
-        f'call sell: currency_pair={currency_pair}, type={sell_type}, price={price}, coin_amount={coin_amount}')
-    res = korbit.post(
-        url='https://api.korbit.co.kr/v1/user/orders/sell',
-        data={'currency_pair': currency_pair,
-              'type': sell_type,
-              'price': price,
-              'coin_amount': coin_amount})
-    if res.ok:
-        resJson = res.json()
-        status = resJson['status']
-        if status == 'success':
-            return resJson
-        else:
-            raise Exception(errorSymbol[status])
-    raise Exception(f'{res.status_code} Error')
+    resJson = post(url='https://api.korbit.co.kr/v1/user/orders/sell',
+                   data={'currency_pair': currency_pair,
+                         'type': sell_type,
+                         'price': price,
+                         'coin_amount': coin_amount})
+    status = resJson['status']
+    if status == 'success':
+        return resJson
+    else:
+        raise Exception(errorSymbol[status])
 
 
 def cancel(currency_pair, id, **kwargs):
@@ -210,23 +212,14 @@ def cancel(currency_pair, id, **kwargs):
       - already_canceled 이미 취소된 주문인 경우.     
     :param currency_pair: 요청할 통화쌍. [제약조건]에 존재하는 통화쌍은 모두 사용할수 있으며, 이 외에 다른 통화쌍은 지원하지 않는다.
     :param id: 취소할 주문의 ID. string 또는 list. list의 경우는 여러 건의 주문을 한 번에 취소. v1/user/orders/open의 응답에 들어있는 id 필드의 값이나, v1/user/orders/buy 혹은 v1/user/orders/sell의 결과로 받은 orderId를 사용할 수 있다.   '''
-    logging.debug(f'call cancel: currency_pair={currency_pair}, id={id}')
-    if not id:
-        return
-    res = korbit.post(
-        url='https://api.korbit.co.kr/v1/user/orders/cancel',
-        data={'currency_pair': currency_pair,
-              'id': id}
-    )
-    if res.ok:
-        return res.json()
-        # resJson = res.json()
-        # status = resJson['status'] # TODO 이거 배열로 들어오네
-        # if status == 'success':
-        #     return resJson
-        # else:
-        #     raise Exception(errorSymbol[status])
-    raise Exception(f'{res.status_code} Error')
+    resJson = post(url='https://api.korbit.co.kr/v1/user/orders/cancel',
+                   data={'currency_pair': currency_pair,
+                         'id': id})
+    for j in resJson:
+        status = j['status']
+        if status != 'success':
+            raise Exception(errorSymbol[status])
+        return resJson
 
 
 def open(currency_pair, offset=0, limit=40, **kwargs):
@@ -247,14 +240,10 @@ def open(currency_pair, offset=0, limit=40, **kwargs):
     :param currency_pair: 요청할 통화쌍
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
-    logging.debug(f'call open: currency_pair={currency_pair}')
-    res = korbit.get(
-        url='https://api.korbit.co.kr/v1/user/orders/open',
-        params={'currency_pair': currency_pair,
-                'offset': offset,
-                'limit': limit})
-    if res.ok:
-        return res.json()
+    return get(url='https://api.korbit.co.kr/v1/user/orders/open',
+               params={'currency_pair': currency_pair,
+                       'offset': offset,
+                       'limit': limit})
 
 
 def orders(currency_pair, status, id, offset=0, limit=40, **kwargs):
@@ -278,16 +267,12 @@ def orders(currency_pair, status, id, offset=0, limit=40, **kwargs):
     :param id: 조회할 주문의 ID. string 또는 list. list의 경우는 여러 건의 주문을 한 번에 조회
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40    '''
-    logging.debug(f'call orders: currency_pair={currency_pair}, status={status}, id={id}')
-    res = korbit.get(
-        url='https://api.korbit.co.kr/v1/user/orders',
-        params={'currency_pair': currency_pair,
-                'status': status,
-                'id': id,
-                'offset': offset,
-                'limit': limit})
-    if res.ok:
-        return res.json()
+    return get(url='https://api.korbit.co.kr/v1/user/orders',
+               params={'currency_pair': currency_pair,
+                       'status': status,
+                       'id': id,
+                       'offset': offset,
+                       'limit': limit})
 
 
 def transactions(currency_pair, offset=0, limit=40, **kwargs):
@@ -311,19 +296,7 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
     :param currency_pair: 요청할 통화쌍
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
-    logging.debug(f'call transactions: currency_pair={currency_pair}')
-    try:
-        res = korbit.get(
-            url='https://api.korbit.co.kr/v1/user/transactions',
-            params={'currency_pair': currency_pair,
-                    'offset': offset,
-                    'limit': limit})
-        if res.ok and res.json():
-            return res.json()
-        else:
-            raise Exception(f'res.headers=[{res.headers}], res.text=[{res.text}]')
-    except:
-        traceback.print_exc()
-        time.sleep(10)
-        logging.error('10초 기다렸다. 다시간다.')
-        transactions(currency_pair, offset, limit, **kwargs)
+    return get(url='https://api.korbit.co.kr/v1/user/transactions',
+               params={'currency_pair': currency_pair,
+                       'offset': offset,
+                       'limit': limit})

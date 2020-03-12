@@ -90,13 +90,10 @@ def recordOrder(log):
 
 def exception_hook(type, value, tb):
     logging.error('='*80)
-    logging.error(f'Type: {type}')
-    logging.error(f'Value: {value}')
     t = traceback.format_exception(type, value, tb)
     t = [i.rstrip().split('\n') for i in t]
-    for i in t:
-        for j in i:
-            logging.error(j)
+    for i in sum(t, []):
+        logging.error(i)
     logging.error('-'*80)
 
 
