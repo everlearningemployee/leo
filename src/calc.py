@@ -37,8 +37,7 @@ def calcBuyOrder(distributionRate,  # propensity
     if ao < am:
         logging.debug(f'ao(={ao}) < am(={am}): 다시계산!')
         ao = am
-        # 이게 맞지만 거래가 발생 안해서 주석 처리함 TODO 나중에 주석 풀을 것
-        # po = (b * vc) / (ai + am * (1 + b))
+        po = (b * vc) / (ai + am * (1 + b))  # 이게 맞지만 거래가 잘 발생 안함. 지겨우면 주석으로 막을 것
         logging.debug(f'po={po}, ao={ao}')
 
     # 호가단위로 보정
@@ -79,9 +78,8 @@ def calcSellOrder(distributionRate,  # propensity
     # 최소주문량보다 작을 경우
     if ao < am:
         logging.debug(f'ao(={ao}) < am(={am}): 다시계산!')
-        ao = am
-        # 이게 맞지만 거래가 발생 안해서 주석 처리함 TODO 나중에 주석 풀을 것
-        # po = (b * vc) / (ai - am * (1 + b))
+        ao = am        
+        po = (b * vc) / (ai - am * (1 + b)) # 이게 맞지만 거래가 잘 발생 안함. 지겨우면 주석으로 막을 것
         logging.debug(f'po={po}, ao={ao}')
 
     # 호가단위로 보정

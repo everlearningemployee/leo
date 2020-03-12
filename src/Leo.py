@@ -47,10 +47,6 @@ def run(coin, currency):
                 transactionsLogging.info(ordr)
 
         # -------------------------------------------------------------------------
-        # openOrdr = API.open(**const)  # [미 체결 주문내역] # TODO 40개 이상
-        # openOrdrId = {str(o['id']) for o in openOrdr}  # [미 체결 주문내역] id 집합
-        # logging.info(f'[미 체결 주문내역] {openOrdrId}')
-        # logging.info(f'<주문진행건> 중 [미 체결 주문내역] {openOrdrId} [주문 취소] (부분 체결 포함)')
         openOrdrId = LeoOrdrId - filledOrdrId
         logging.info(f'<주문진행건> 중 [체결된 주문내역]을 제외한 {openOrdrId} [주문 취소] (부분 체결 포함)')
         if openOrdrId:

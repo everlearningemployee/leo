@@ -8,4 +8,4 @@ docker run -d \
     leo
 docker logs -f $LEO
 # sleep 3
-# watch -n 30 tail /home/ubuntu/Leo/myorder/* /home/ubuntu/Leo/logs/*
+# watch -n 30 tail /home/ubuntu/Leo/myorder/* /home/ubuntu/Leo/logs/out.log  /home/ubuntu/Leo/logs/order.log /home/ubuntu/Leo/logs/trans.log
