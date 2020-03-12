@@ -65,7 +65,7 @@ def run(coin, currency):
                 if sellPrc < price: # 보다 비싸게 거래한걸 매도가의 기준으로
                     sellPrc = price
                     sellId = orderId
-                elif buyPrc > price: # 보다 싸게 거래한걸 매수가의 기준으로
+                if buyPrc > price: # 보다 싸게 거래한걸 매수가의 기준으로
                     buyPrc = price
                     buyId = orderId
 
