@@ -170,7 +170,7 @@ def buy(currency_pair, buy_type, price=None, coin_amount=None, fiat_amount=None,
     if status == 'success':
         return resJson
     else:
-        raise Exception(errorSymbol[status])
+        logging.error(errorSymbol[status])
 
 
 def sell(currency_pair, sell_type, price=None, coin_amount=None, **kwargs):
@@ -197,7 +197,7 @@ def sell(currency_pair, sell_type, price=None, coin_amount=None, **kwargs):
     if status == 'success':
         return resJson
     else:
-        raise Exception(errorSymbol[status])
+        logging.error(errorSymbol[status])
 
 
 def cancel(currency_pair, id, **kwargs):
@@ -218,8 +218,8 @@ def cancel(currency_pair, id, **kwargs):
     for j in resJson:
         status = j['status']
         if status != 'success':
-            raise Exception(errorSymbol[status])
-        return resJson
+            logging.error(errorSymbol[status])
+    return resJson
 
 
 def open(currency_pair, offset=0, limit=40, **kwargs):
