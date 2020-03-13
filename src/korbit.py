@@ -33,7 +33,8 @@ korbit = OAuth2Session(client=BackendApplicationClient(**iam),
                        auto_refresh_kwargs=iam,
                        token_updater=token_saver)
 
-token = korbit.fetch_token(token_url='https://api.korbit.co.kr/v1/oauth2/access_token', **iam)
+token = korbit.fetch_token(
+    token_url='https://api.korbit.co.kr/v1/oauth2/access_token', **iam)
 
 
 def get(url, params=None, data=None, headers=None, cookies=None, files=None, auth=None, timeout=None,
@@ -44,16 +45,18 @@ def get(url, params=None, data=None, headers=None, cookies=None, files=None, aut
         allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
         json=json)
     # logging.debug(f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{str(res.text})[:80]])
-    logging.debug(f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
+    logging.debug(
+        f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
     if res.ok:
         return res.json()
-    elif res.status_code == 504:  # Gateway timeout
-        time.sleep(1)
-        get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
-            allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
-            json=json)
     else:
-        raise Exception(f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
+        logging.error(
+            f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
+        if res.status_code == 504:  # Gateway timeout
+            time.sleep(1)
+            get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
+                allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
+                json=json)
     # except:
     #     traceback.print_exc()
     #     time.sleep(10)
@@ -68,11 +71,18 @@ def post(url, data=None, json=None, params=None, headers=None, cookies=None, fil
         url=url, data=data, json=json, params=params, headers=headers, cookies=cookies, files=files, auth=auth,
         timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify,
         cert=cert)
-    logging.debug(f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
+    logging.debug(
+        f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
     if res.ok:
         return res.json()
     else:
-        raise Exception(f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
+        logging.error(
+            f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
+        if res.status_code == 401:  # Unauthorized
+            time.sleep(1)
+            post(url=url, data=data, json=json, params=params, headers=headers, cookies=cookies, files=files, auth=auth,
+                 timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify,
+                 cert=cert)
 
 
 def detailed(currency_pair, **kwargs):
