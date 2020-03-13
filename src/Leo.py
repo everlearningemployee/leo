@@ -62,10 +62,10 @@ def run(coin, currency):
             orderId = order['fillsDetail']['orderId']
             if orderId in LeoOrdrId:
                 price = float(order['fillsDetail']['price']['value'])
-                if sellPrc < price: # 보다 비싸게 거래한걸 매도가의 기준으로
+                if sellPrc < price:  # 보다 비싸게 거래한걸 매도가의 기준으로
                     sellPrc = price
                     sellId = orderId
-                if buyPrc > price: # 보다 싸게 거래한걸 매수가의 기준으로
+                if buyPrc > price:  # 보다 싸게 거래한걸 매수가의 기준으로
                     buyPrc = price
                     buyId = orderId
 
@@ -95,41 +95,35 @@ def getBalance(currency, coin):
 def sureBet(buyPrice, sellPrice, coinAmount, cashValue, buyId=None, sellId=None, **kwargs):
     buyOrdrRslt, sellOrdrRslt = None, None
 
-    buyOrdr = calcBuyOrder(
-        filledPrice=buyPrice,
-        coinAmount=coinAmount,
-        cashValue=cashValue,
-        **kwargs)
+    buyOrdr = calcBuyOrder(filledPrice=buyPrice,
+                           coinAmount=coinAmount,
+                           cashValue=cashValue,
+                           **kwargs)
     logging.info(f'매수 주문: buyOrdr={buyOrdr}')
     if buyOrdr['price'] != 0 and buyOrdr['amount'] != 0:
-        buyOrdrRslt = API.buy(
-            price=buyOrdr['price'],
-            coin_amount=buyOrdr['amount'],
-            buy_type='limit',
-            **kwargs)
+        buyOrdrRslt = API.buy(price=buyOrdr['price'],
+                              coin_amount=buyOrdr['amount'],
+                              buy_type='limit',
+                              **kwargs)
         buyOrdrRslt.update({'type': 'buy'})
-        recordOrder([
-            'buy', buyId, buyPrice, coinAmount, cashValue,
-            buyOrdrRslt['orderId'], buyOrdr['price'], buyOrdr['amount'], ])
+        recordOrder(['buy', buyId, buyPrice, coinAmount, cashValue,
+                     buyOrdrRslt['orderId'], buyOrdr['price'], buyOrdr['amount'], buyOrdr['price'] / buyPrice * 100])
     else:
         logging.info('매수 주문 하지 않음')
 
-    sellOrdr = calcSellOrder(
-        filledPrice=sellPrice,
-        coinAmount=coinAmount,
-        cashValue=cashValue,
-        **kwargs)
+    sellOrdr = calcSellOrder(filledPrice=sellPrice,
+                             coinAmount=coinAmount,
+                             cashValue=cashValue,
+                             **kwargs)
     logging.info(f'매도 주문: sellOrdr={sellOrdr}')
     if sellOrdr['price'] != 0 and sellOrdr['amount'] != 0:
-        sellOrdrRslt = API.sell(
-            price=sellOrdr['price'],
-            coin_amount=sellOrdr['amount'],
-            sell_type='limit',
-            **kwargs)
+        sellOrdrRslt = API.sell(price=sellOrdr['price'],
+                                coin_amount=sellOrdr['amount'],
+                                sell_type='limit',
+                                **kwargs)
         sellOrdrRslt.update({'type': 'sell'})
-        recordOrder([
-            'sell', sellId, sellPrice, coinAmount, cashValue,
-            sellOrdrRslt['orderId'], sellOrdr['price'], sellOrdr['amount'], ])
+        recordOrder(['sell', sellId, sellPrice, coinAmount, cashValue, sellOrdrRslt['orderId'],
+                     sellOrdr['price'], sellOrdr['amount'], sellOrdr['price'] / sellPrice * 100])
     else:
         logging.info('매도 주문 하지 않음')
 
