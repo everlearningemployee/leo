@@ -52,7 +52,7 @@ def get(url, params=None, data=None, headers=None, cookies=None, files=None, aut
     else:
         logging.error(
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
-        if res.status_code == 504:  # Gateway timeout
+        if res.status_code in [401, 504]:  # 401:Unauthorized, 504:Gateway timeout
             time.sleep(1)
             get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
                 allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
@@ -78,7 +78,7 @@ def post(url, data=None, json=None, params=None, headers=None, cookies=None, fil
     else:
         logging.error(
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
-        if res.status_code == 401:  # Unauthorized
+        if res.status_code in [401, 504]:  # 401:Unauthorized, 504:Gateway timeout
             time.sleep(1)
             post(url=url, data=data, json=json, params=params, headers=headers, cookies=cookies, files=files, auth=auth,
                  timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify,
