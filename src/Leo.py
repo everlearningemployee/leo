@@ -106,8 +106,8 @@ def sureBet(buyPrice, sellPrice, coinAmount, cashValue, buyId=None, sellId=None,
                               buy_type='limit',
                               **kwargs)
         buyOrdrRslt.update({'type': 'buy'})
-        recordOrder(['buy', buyId, buyPrice, coinAmount, cashValue,
-                     buyOrdrRslt['orderId'], buyOrdr['price'], buyOrdr['amount'], buyOrdr['price'] / buyPrice * 100])
+        recordOrder(['buy', buyId, buyPrice, coinAmount, cashValue, buyOrdrRslt['orderId'],
+                     buyOrdr['price'], buyOrdr['amount'], buyOrdr['price'] / buyPrice * 100 - 100])
     else:
         logging.info('매수 주문 하지 않음')
 
@@ -123,7 +123,7 @@ def sureBet(buyPrice, sellPrice, coinAmount, cashValue, buyId=None, sellId=None,
                                 **kwargs)
         sellOrdrRslt.update({'type': 'sell'})
         recordOrder(['sell', sellId, sellPrice, coinAmount, cashValue, sellOrdrRslt['orderId'],
-                     sellOrdr['price'], sellOrdr['amount'], sellOrdr['price'] / sellPrice * 100])
+                     sellOrdr['price'], sellOrdr['amount'], sellOrdr['price'] / sellPrice * 100 - 100])
     else:
         logging.info('매도 주문 하지 않음')
 
