@@ -80,9 +80,10 @@ def post(url, data=None, json=None, params=None, headers=None, cookies=None, fil
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
         if res.status_code in [401, 504]:  # 401:Unauthorized, 504:Gateway timeout
             time.sleep(1)
-            post(url=url, data=data, json=json, params=params, headers=headers, cookies=cookies, files=files, auth=auth,
-                 timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify,
-                 cert=cert)
+            post(
+                url=url, data=data, json=json, params=params, headers=headers, cookies=cookies, files=files, auth=auth,
+                timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream,
+                verify=verify, cert=cert)
 
 
 def detailed(currency_pair, **kwargs):
@@ -306,7 +307,12 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
     :param currency_pair: 요청할 통화쌍
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
-    return get(url='https://api.korbit.co.kr/v1/user/transactions',
-               params={'currency_pair': currency_pair,
-                       'offset': offset,
-                       'limit': limit})
+    try:
+        return get(url='https://api.korbit.co.kr/v1/user/transactions',
+                   params={'currency_pair': currency_pair,
+                           'offset': offset,
+                           'limit': limit})
+    except:
+        logging.error(traceback.format_exc())
+        time.sleep(1)
+        return transactions(currency_pair, offset, limit)
