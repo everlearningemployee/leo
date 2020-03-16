@@ -48,7 +48,16 @@ def get(url, params=None, data=None, headers=None, cookies=None, files=None, aut
     logging.debug(
         f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
     if res.ok:
-        return res.json()
+        try:
+            return res.json()
+        except:
+            # TODO 왜 json이 안와? 미치것네
+            logging.error(
+                f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
+            time.sleep(1)
+            get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
+                allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
+                json=json)
     else:
         logging.error(
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
