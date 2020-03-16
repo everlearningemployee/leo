@@ -48,16 +48,7 @@ def get(url, params=None, data=None, headers=None, cookies=None, files=None, aut
     logging.debug(
         f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
     if res.ok:
-        try:
-            return res.json()
-        except:
-            # TODO 왜 json이 안와? 미치것네
-            logging.error(
-                f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
-            time.sleep(1)
-            get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
-                allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
-                json=json)
+        return res.json()
     else:
         logging.error(
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
@@ -66,11 +57,6 @@ def get(url, params=None, data=None, headers=None, cookies=None, files=None, aut
             get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
                 allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
                 json=json)
-    # except:
-    #     traceback.print_exc()
-    #     time.sleep(10)
-    #     logging.error('10초 기다렸다. 다시간다.')
-    #     transactions(currency_pair, offset, limit, **kwargs)
 
 
 def post(url, data=None, json=None, params=None, headers=None, cookies=None, files=None, auth=None, timeout=None,

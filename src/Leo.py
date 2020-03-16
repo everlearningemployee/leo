@@ -25,7 +25,7 @@ def run(coin, currency):
                 sellPrice=lastPrc,
                 coinAmount=coinAmount,
                 cashValue=cashValue,
-                **prpnst, **ticker, **const)
+                **prpnst, **const)
 
     while True:
         LeoOrdrId = {str(o['orderId']) for o in getLeoOrder()}  # <주문진행건> id 집합
@@ -71,14 +71,15 @@ def run(coin, currency):
 
         # -------------------------------------------------------------------------
         coinAmount, cashValue = getBalance(coin=coin, currency=currency)  # 코인보유량, 현금보유액
-        ticker = API.detailed(**const)  # [시장 현황 상세정보]
+        # ticker = API.detailed(**const)  # [시장 현황 상세정보] # TODO 필요없는거 확인되면 지울 것
         sureBet(buyPrice=buyPrc,
                 buyId=buyId,
                 sellPrice=sellPrc,
                 sellId=sellId,
                 coinAmount=coinAmount,
                 cashValue=cashValue,
-                **prpnst, **ticker, **const)
+                # **prpnst, **ticker, **const)
+                **prpnst, **const)
 
         time.sleep(cfg['interval'])  # API call rate limit을 피한다 https://apidocs.korbit.co.kr/ko/#api-call-rate-limit
 
