@@ -6,6 +6,7 @@ from calc import *
 from dao import *
 from utils import *
 import time
+import json
 import logging
 
 
@@ -44,7 +45,7 @@ def run(coin, currency):
         logging.info(f'체결 {LeoOrdrId & filledOrdrId}')
         for ordr in filledOrdr:
             if ordr['fillsDetail']['orderId'] in LeoOrdrId:
-                transactionsLogging.info(ordr)
+                transactionsLogging.info(json.dumps(ordr))
 
         # -------------------------------------------------------------------------
         openOrdrId = LeoOrdrId - filledOrdrId
