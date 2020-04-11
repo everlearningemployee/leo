@@ -23,13 +23,15 @@ logging.config.dictConfig({
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'detailed',
+            'level': 'DEBUG',
         },
         'out': {
             'class': 'logging.FileHandler',
             'filename': '/var/log/leo/out.log',
-            'mode': 'a',
+            'mode': 'w',
             'formatter': 'detailed',
             'encoding': 'utf-8',
+            'level': 'INFO',
         },
         'order': {
             'class': 'logging.FileHandler',
