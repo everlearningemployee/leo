@@ -313,7 +313,7 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
                    params={'currency_pair': currency_pair,
                            'offset': offset,
                            'limit': limit})
-    except:time.sleep
+    except:
         logging.error(traceback.format_exc())
         # time.sleep(1)
         # return transactions(currency_pair, offset, limit)
