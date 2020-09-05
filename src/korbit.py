@@ -36,6 +36,8 @@ korbit = OAuth2Session(client=BackendApplicationClient(**iam),
 token = korbit.fetch_token(
     token_url='https://api.korbit.co.kr/v1/oauth2/access_token', **iam)
 
+retry_interval = 1
+max_retry_interval = 3600
 
 def get(url, params=None, data=None, headers=None, cookies=None, files=None, auth=None, timeout=None,
         allow_redirects=True, proxies=None, hooks=None, stream=None, verify=None, cert=None, json=None):
@@ -52,11 +54,13 @@ def get(url, params=None, data=None, headers=None, cookies=None, files=None, aut
     else:
         logging.error(
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
-        if res.status_code in [401, 504]:  # 401:Unauthorized, 504:Gateway timeout
-            time.sleep(1)
+        if res.status_code in ['401', '504']:  # 401:Unauthorized, 504:Gateway timeout
+            time.sleep(retry_interval)
+            retry_interval = min(max_retry_interval, retry_interval * 1.5)
             get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
                 allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify, cert=cert,
                 json=json)
+            retry_interval = 1
 
 
 def post(url, data=None, json=None, params=None, headers=None, cookies=None, files=None, auth=None, timeout=None,
@@ -73,12 +77,14 @@ def post(url, data=None, json=None, params=None, headers=None, cookies=None, fil
     else:
         logging.error(
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
-        if res.status_code in [401, 504]:  # 401:Unauthorized, 504:Gateway timeout
-            time.sleep(1)
+        if res.status_code in ['401', '504']:  # 401:Unauthorized, 504:Gateway timeout
+            time.sleep(retry_interval)
+            retry_interval = min(max_retry_interval, retry_interval * 1.5)
             post(
                 url=url, data=data, json=json, params=params, headers=headers, cookies=cookies, files=files, auth=auth,
                 timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream,
                 verify=verify, cert=cert)
+            retry_interval = 1
 
 
 def detailed(currency_pair, **kwargs):
@@ -307,7 +313,7 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
                    params={'currency_pair': currency_pair,
                            'offset': offset,
                            'limit': limit})
-    except:
+    except:time.sleep
         logging.error(traceback.format_exc())
-        time.sleep(1)
-        return transactions(currency_pair, offset, limit)
+        # time.sleep(1)
+        # return transactions(currency_pair, offset, limit)
