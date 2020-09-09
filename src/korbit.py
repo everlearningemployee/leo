@@ -48,13 +48,14 @@ def get(url, params=None, data=None, headers=None, cookies=None, files=None, aut
         json=json)
     # logging.debug(f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{str(res.text})[:80]])
     logging.debug(
-        f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
+        f'res.ok=[{res.ok}], res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
     if res.ok:
         return res.json()
     else:
         logging.error(
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
-        if res.status_code in ['401', '504']:  # 401:Unauthorized, 504:Gateway timeout
+        if str(res.status_code) in ['401', '504']:  # 401:Unauthorized, 504:Gateway timeout
+            logging.error(f'{retry_interval}초 후 재시도')
             time.sleep(retry_interval)
             retry_interval = min(max_retry_interval, retry_interval * 1.5)
             get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
@@ -71,13 +72,14 @@ def post(url, data=None, json=None, params=None, headers=None, cookies=None, fil
         timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify,
         cert=cert)
     logging.debug(
-        f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
+        f'res.ok=[{res.ok}], res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
     if res.ok:
         return res.json()
     else:
         logging.error(
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
-        if res.status_code in ['401', '504']:  # 401:Unauthorized, 504:Gateway timeout
+        if str(res.status_code) in ['401', '504']:  # 401:Unauthorized, 504:Gateway timeout
+            logging.error(f'{retry_interval}초 후 재시도')
             time.sleep(retry_interval)
             retry_interval = min(max_retry_interval, retry_interval * 1.5)
             post(
@@ -309,10 +311,13 @@ def transactions(currency_pair, offset=0, limit=40, **kwargs):
     :param offset: 전체 데이터 중 offset(0부터 시작) 번 째 데이터부터 가져옴
     :param limit: 전체 데이터 중 limit개를 가져옴. 최대값은 40   '''
     try:
-        return get(url='https://api.korbit.co.kr/v1/user/transactions',
+        rtrn = get(url='https://api.korbit.co.kr/v1/user/transactions',
                    params={'currency_pair': currency_pair,
                            'offset': offset,
                            'limit': limit})
+        if rtrn == None:
+          return {}
+        return rtrn
     except:
         logging.error(traceback.format_exc())
         # time.sleep(1)
