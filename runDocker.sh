@@ -2,6 +2,7 @@
 LEO=leo
 docker rm -f $LEO
 docker run -d \
+    --rm \
     --name $LEO \
     -v /home/ubuntu/leo/logs:/var/log/leo \
     -v /home/ubuntu/leo/myorder:/leo/order \

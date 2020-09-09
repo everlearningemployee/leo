@@ -1,5 +1,6 @@
 #!/bin/bash
-git pull
 docker build \
+    --no-cache=false \
+    --force-rm=true \
     -t leo \
     .

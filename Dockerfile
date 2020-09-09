@@ -1,6 +1,11 @@
 FROM ubuntu
-RUN apt update -y
-RUN apt install -y python3 python3-pip
+RUN apt-get update -y
+
+ENV RUN DEBIAN_FRONTEND="noninteractive" 
+RUN apt-get -y install tzdata
+ENV TZ=Asia/Seoul
+
+RUN apt-get install -y python3 python3-pip
 RUN pip3 install \
     PyYAML \
     requests-oauthlib
