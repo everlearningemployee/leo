@@ -72,7 +72,7 @@ def post(url, data=None, json=None, params=None, headers=None, cookies=None, fil
         timeout=timeout, allow_redirects=allow_redirects, proxies=proxies, hooks=hooks, stream=stream, verify=verify,
         cert=cert)
     logging.debug(
-        f'res.ok=[{res.ok}], res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
+        f'res.status_code=[{res.status_code}], res.text=[{str(res.text)[:200]}]')
     if res.ok:
         return res.json()
     else:
