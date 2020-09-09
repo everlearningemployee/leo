@@ -56,7 +56,7 @@ def get(url, params=None, data=None, headers=None, cookies=None, files=None, aut
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
         if str(res.status_code) in ['401', '504']:  # 401:Unauthorized, 504:Gateway timeout
             global retry_interval, max_retry_interval
-            logging.error(f'{retry_interval}초 후 재시도')
+            logging.error(f'{retry_interval:.1f}초 후 재시도')
             time.sleep(retry_interval)
             retry_interval = min(max_retry_interval, retry_interval * 1.5)
             get(url=url, params=params, data=data, headers=headers, cookies=cookies, files=files, auth=auth, timeout=timeout,
@@ -81,7 +81,7 @@ def post(url, data=None, json=None, params=None, headers=None, cookies=None, fil
             f'res.status_code=[{res.status_code}], res.headers=[{res.headers}], res.text=[{res.text}]')
         if str(res.status_code) in ['401', '504']:  # 401:Unauthorized, 504:Gateway timeout
             global retry_interval, max_retry_interval
-            logging.error(f'{retry_interval}초 후 재시도')
+            logging.error(f'{retry_interval:.1f}초 후 재시도')
             time.sleep(retry_interval)
             retry_interval = min(max_retry_interval, retry_interval * 1.5)
             post(
