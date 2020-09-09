@@ -6,3 +6,4 @@ nohup.out
 LeoOrder.json
 test
 *.bak
+src/propensity.yaml
