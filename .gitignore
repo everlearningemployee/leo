@@ -7,3 +7,7 @@ LeoOrder.json
 test
 *.bak
 src/propensity.yaml
+Untitled.ipynb
+.ipynb_checkpoints/Untitled-checkpoint.ipynb
+src/test.ipynb
+src/test.py
