@@ -1,5 +1,0 @@
-# 배분비율
-distributionRate: 1 # coin / cash
-
-# 주문 트리거링 가격변동%
-triggeringFluctuations: 0.3 # %
