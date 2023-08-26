@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  leo:
+    image: leo:latest
+    volumes:
+      - /home/ubuntu/leo/logs:/var/log/leo
+      - /home/ubuntu/leo/myorder:/leo/order
+    restart: always
